@@ -4,7 +4,6 @@ import json
 import urllib
 import urllib2
 import os.path
-import pprint
 
 #authorization stuff 
 apikey=''
