@@ -47,6 +47,6 @@ while offset <= total_count:
 			jsonfile = jsondir + id + ".json"
 			if not os.path.isfile(jsonfile):
 				file = open(jsonfile,'w+')
-				file.write(str(workout))
+				json.dump(workout,file)
 				file.close()	
 	offset = offset + limit
