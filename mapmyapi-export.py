@@ -4,12 +4,18 @@ import json
 import urllib
 import urllib2
 import time
+import datetime
+from time import mktime
+from datetime import datetime
+import pytz
+import pprint
 
 #authorization stuff 
 apikey=''
 authorization=''
 contenttype='application/json'
 user=''
+mytz='America/Los_Angeles'
 
 headers = { 'Api-Key' : apikey,
             'Authorization' : authorization,
@@ -21,10 +27,11 @@ current_month = None
 current_month_mileage = 0
 all_time_mileage = 0
 all_time_seconds = 0
+all_time_runs = 0
 
 base_url = 'https://oauth2-api.mapmyapi.com'
 
-file = open('mmf.txt','w+')
+file = open('mapmyrun.txt','w+')
 
 url = "/v7.0/workout/?user=" + user + "&offset=" + str(offset) + "&limit=" + str(limit) + activities
 req = urllib2.Request('%s%s' % (base_url, url), None, headers)
@@ -44,12 +51,15 @@ while offset <= total_count:
 	workouts = resp.get('_embedded')
 	for key,value in workouts.iteritems():
 		for workout in value:
+			all_time_runs = all_time_runs + 1
 			notes = workout.get('notes')
 			source = workout.get('source')
 			agg = workout.get('aggregates')
 			start_time = time.strptime(workout.get('start_datetime'), '%Y-%m-%dT%H:%M:%S+00:00')
-			date = time.strftime('%a %m/%d/%y', start_time)
-			month = time.strftime('%B', start_time)
+			dt = datetime.fromtimestamp(mktime(start_time)).replace(tzinfo=pytz.utc)
+			local = dt.astimezone(pytz.timezone(mytz))
+			date = local.strftime('%a %m/%d/%y')
+			month = local.strftime('%B')
 			if month != current_month:
 				current_month = month
 				file.write('\n')
@@ -113,5 +123,6 @@ file.write('----------------\n')
 file.write('Distance: ' + all_time_distance + ' miles\n')
 file.write('Pace: ' + pace + '\n')
 file.write('Duration: ' + str(durhours) + ":" + str(durmins) + ":" + str(dursecs) + '\n')
+file.write('Runs: ' + str(all_time_runs) + '\n')
 file.write('----------------\n')
 file.close()
