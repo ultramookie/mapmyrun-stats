@@ -53,7 +53,7 @@ while offset <= total_count:
 		for workout in value:
 			all_time_runs = all_time_runs + 1
 			notes = workout.get('notes')
-			source = workout.get('source')
+			source = workout.get('source').split()
 			agg = workout.get('aggregates')
 			start_time = time.strptime(workout.get('start_datetime'), '%Y-%m-%dT%H:%M:%S+00:00')
 			dt = datetime.fromtimestamp(mktime(start_time)).replace(tzinfo=pytz.utc)
@@ -99,7 +99,7 @@ while offset <= total_count:
 			durhours, durrem = divmod(duration_seconds, 3600)
 			durmins, dursecs = divmod(durrem,60)
 
-			file.write(str(date) + " : " + distance.ljust(5) + "mi " + pace.ljust(11) + "" + str(durhours).rjust(2, '0') + ":" + str(durmins).rjust(2,'0') + ":" + str(dursecs).rjust(2, '0') + " " + str(avgheartrate).ljust(5) + " " + str(minheartrate).ljust(5) + " " + avgspeed.ljust(5) + " " + maxspeed.ljust(5) + " :: " + str(source).ljust(28) + " :: " + str(notes) + "\n")
+			file.write(str(date) + " : " + distance.ljust(5) + "mi " + pace.ljust(11) + "" + str(durhours).rjust(2, '0') + ":" + str(durmins).rjust(2,'0') + ":" + str(dursecs).rjust(2, '0') + " " + str(avgheartrate).ljust(5) + " " + str(minheartrate).ljust(5) + " " + avgspeed.ljust(5) + " " + maxspeed.ljust(5) + " :: " + str(source[0]).ljust(12) + " :: " + str(notes) + "\n")
 	
 	offset = offset + limit
 
