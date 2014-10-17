@@ -8,7 +8,6 @@ import datetime
 from time import mktime
 from datetime import datetime
 import pytz
-import pprint
 
 #authorization stuff 
 apikey=''
@@ -68,7 +67,7 @@ while offset <= total_count:
 					file.write('\n')
 					current_month_mileage = 0
 				file.write('--' + current_month + '--\n')
-				file.write("Date : Distance : Pace : Duration : Avg HR : Min HR : Avg Speed : Max Speed :: Source :: Notes \n")
+				file.write("Date : Distance : Pace : Duration : Avg HR : Min HR : Avg Speed : Max Speed : Cadence (Avg/Max) :: Source :: Notes \n")
 
 			avgheartrate = agg.get('heartrate_avg')
 			minheartrate = agg.get('heartrate_min')
@@ -78,6 +77,17 @@ while offset <= total_count:
 			else:
 				maxspeed = '--'
 			# convert from km to mi and round
+			if agg.get('cadence_avg'):
+				avgcad = int(agg.get('cadence_avg'))
+			else:
+				avgcad = '--'
+			if agg.get('cadence_max'):
+				maxcad = agg.get('cadence_max')
+			else:
+				maxcad = '--'
+
+			cadence = str(avgcad) + '/' + str(maxcad)
+
 			miles = float(agg.get('distance_total')) * 0.000621371
 			current_month_mileage = current_month_mileage + miles
 			all_time_mileage = all_time_mileage + miles
@@ -99,7 +109,7 @@ while offset <= total_count:
 			durhours, durrem = divmod(duration_seconds, 3600)
 			durmins, dursecs = divmod(durrem,60)
 
-			file.write(str(date) + " : " + distance.ljust(5) + "mi " + pace.ljust(11) + "" + str(durhours).rjust(2, '0') + ":" + str(durmins).rjust(2,'0') + ":" + str(dursecs).rjust(2, '0') + " " + str(avgheartrate).ljust(5) + " " + str(minheartrate).ljust(5) + " " + avgspeed.ljust(5) + " " + maxspeed.ljust(5) + " :: " + str(source[0]).ljust(12) + " :: " + str(notes) + "\n")
+			file.write(str(date) + " : " + distance.ljust(5) + "mi " + pace.ljust(11) + "" + str(durhours).rjust(2, '0') + ":" + str(durmins).rjust(2,'0') + ":" + str(dursecs).rjust(2, '0') + " " + str(avgheartrate).ljust(5) + " " + str(minheartrate).ljust(5) + " " + avgspeed.ljust(5) + " " + maxspeed.ljust(5) + " : " + cadence.ljust(9) + " :: " + str(source[0]).ljust(12) + " :: " + str(notes) + "\n")
 	
 	offset = offset + limit
 
